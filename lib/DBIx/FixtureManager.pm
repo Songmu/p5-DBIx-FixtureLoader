@@ -37,9 +37,9 @@ has bulk_insert => (
 );
 
 has sql_builder => (
-    is => 'ro',
+    is => 'lazy',
     default => sub {
-        SQL::Maker->new(
+        DBIx::FixtureManager::QueryBuilder->new(
             driver => shift->driver_name,
         );
     }
@@ -111,6 +111,10 @@ sub _get_records_from_csv {
     \@records;
 }
 
+
+package DBIx::FixtureManager::QueryBuilder;
+use parent 'SQL::Maker';
+__PACKAGE__->load_plugin('InsertMulti');
 
 1;
 __END__
