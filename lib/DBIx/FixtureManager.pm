@@ -17,13 +17,19 @@ has dbh => (
     required => 1,
 );
 
-has buik_insert => (
-    is => 'ro',
+has driver_name => (
+    is => 'lazy',
+    default => sub {
+        shift->dbh->{Driver}{Name};
+    },
+);
+
+has bulk_insert => (
+    is => 'lazy',
     default => sub {
         my $self = shift;
-        my $dbh = $self->dbh;
-        my $driver_name = $dbh->{Driver}{Name};
-
+        my $driver_name = $self->driver_name;
+        my $dbh         = $self->dbh;
         $driver_name eq 'mysql'                                      ? 1 :
         $driver_name eq 'Pg' && $dbh->{ pg_server_version } >= 82000 ? 1 :
                                                                        0 ;
@@ -34,7 +40,7 @@ has sql_builder => (
     is => 'ro',
     default => sub {
         SQL::Maker->new(
-            driver => shift->{Driver}{Name},
+            driver => shift->driver_name,
         );
     }
 );
@@ -73,7 +79,7 @@ sub load_fixture {
     my $dbh = $self->dbh;
     # needs limit ?
     $dbh->begin_work or croak $dbh->errstr;
-    if ($self->buik_insert) {
+    if ($self->bulk_insert) {
         my ($sql, @binds) = $self->sql_builder->insert_multi( $table, $rows );
 
         $dbh->do( $sql, undef, @binds ) or croak $dbh->errstr;
@@ -90,7 +96,7 @@ sub load_fixture {
 sub _get_records_from_csv {
     my $file = shift;
     require Text::CSV;
-    my $csv = Text::CSV->new(binary => 1);
+    my $csv = Text::CSV->new({binary => 1});
 
     open my $fh, '<', $file or die "$!";
     my $columns = $csv->getline($fh);
