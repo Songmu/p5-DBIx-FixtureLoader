@@ -54,20 +54,16 @@ no Moo;
 
 sub load_fixture {
     my $self = shift;
+    my $file = shift;
+    my %opts = ref $_[0] ? %{$_[0]} : @_;
 
-    my %args =
-        @_ > 1    ? @_              :
-        ref $_[0] ? %{$_[0]}        :
-                    (file => $_[0]) ;
-    my $file = $args{file};
-
-    my $table = $args{table};
+    my $table = $opts{table};
     unless ($table) {
         my $basename = basename($file);
         ($table) = $basename =~ /^([_A-Za-z0-9]+)/;
     }
 
-    my $format = lc($args{format} || '');
+    my $format = lc($opts{format} || '');
     unless ($format) {
         ($format) = $file =~ /\.([^.]*$)/;
     }
@@ -95,7 +91,7 @@ sub load_fixture {
     $self->load_fixture_from_data(
         table  => $table,
         data   => $rows,
-        update => $args{update},
+        update => $opts{update},
     );
 }
 
