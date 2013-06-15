@@ -60,6 +60,19 @@ subtest "adding ar-ish yml" => sub {
     is $rows->[6]{name}, 'ウィザードロッド';
 };
 
+subtest "can't set update option" => sub {
+    my $m = DBIx::FixtureManager->new(
+        dbh => $dbh,
+        update => 1,
+    );
+
+    local $@;
+    eval {
+        $m->load_fixture('t/data/item-3.json');
+    };
+    ok $@;
+};
+
 done_testing;
 
 END {
