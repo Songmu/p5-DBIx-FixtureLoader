@@ -31,4 +31,16 @@ my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
 is scalar @$rows, 2;
 is $rows->[0]{name}, 'エクスカリバー';
 
+subtest update => sub {
+    my $m = DBIx::FixtureManager->new(
+        dbh    => $dbh,
+        update => 1,
+    );
+    $m->load_fixture('t/data/item-update.csv');
+
+    my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
+    is scalar @$rows, 2;
+    is $rows->[0]{name}, 'エクスカリパー';
+};
+
 done_testing;

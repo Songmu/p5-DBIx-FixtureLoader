@@ -113,16 +113,20 @@ sub load_fixture_from_data {
     # needs limit ?
     $dbh->begin_work or croak $dbh->errstr;
     if ($self->bulk_insert) {
-        my ($sql, @binds) = $self->_sql_builder->insert_multi( $table, $data );
-        $sql .= _build_on_duplicate($data->[0]) if $self->update;
+        my $opt;
+        if ($self->update) {
+            $opt->{update} = _build_on_duplicate(keys %{$data->[0]});
+        }
+        my ($sql, @binds) = $self->_sql_builder->insert_multi( $table, $data, $opt );
 
         $dbh->do( $sql, undef, @binds ) or croak $dbh->errstr;
     }
     else {
         my $method = $update ? 'insert_on_duplicate' : 'insert';
         for my $row (@$data) {
-            my ($sql, @binds) = $self->_sql_builder->$method($table, $row);
-            $sql .= _build_on_duplicate($row) if $self->update;
+            my $opt;
+            $opt = _build_on_duplicate(keys %$row);
+            my ($sql, @binds) = $self->_sql_builder->$method($table, $row, $opt);
 
             $dbh->do( $sql, undef, @binds ) or croak $dbh->errstr;
         }
@@ -131,11 +135,7 @@ sub load_fixture_from_data {
 }
 
 sub _build_on_duplicate {
-    my $row_data = shift;
-
-    my $str = ' ON DUPLICATE KEY UPDATE ';
-       $str .= join ',', map {$_.'=VALUES(`'.$_.'`)'} keys %$row_data;
-    $str;
+    +{ map {($_ => \"VALUES(`$_`)")} @_ };
 }
 
 sub get_data_from_csv {
@@ -170,7 +170,8 @@ sub _normalize_data {
 
 package DBIx::FixtureManager::QueryBuilder;
 use parent 'SQL::Maker';
-__PACKAGE__->load_plugin(qw/InsertMulti InsertOnDuplicate/);
+__PACKAGE__->load_plugin('InsertMulti');
+__PACKAGE__->load_plugin('InsertOnDuplicate');
 
 1;
 __END__
