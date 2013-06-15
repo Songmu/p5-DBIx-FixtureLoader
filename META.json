@@ -41,16 +41,37 @@
          }
       },
       "runtime" : {
+         "recommends" : {
+            "JSON" : "0",
+            "Text::CSV" : "0",
+            "YAML::Tiny" : "0"
+         },
          "requires" : {
-            "perl" : "5.008005"
+            "DBI" : "0",
+            "Moo" : "0",
+            "SQL::Maker" : "0",
+            "parent" : "0",
+            "perl" : "5.008001"
          }
       },
       "test" : {
          "requires" : {
-            "Test::More" : "0.98"
+            "Test::More" : "0.98",
+            "Test::Requires" : "0"
          }
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/Songmu/p5-DBIx-FixtureManager/issues"
+      },
+      "homepage" : "https://github.com/Songmu/p5-DBIx-FixtureManager",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/Songmu/p5-DBIx-FixtureManager.git",
+         "web" : "https://github.com/Songmu/p5-DBIx-FixtureManager"
+      }
+   },
    "version" : "0.01"
 }

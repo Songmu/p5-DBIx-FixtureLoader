@@ -32,6 +32,34 @@ my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
 is scalar @$rows, 2;
 is $rows->[0]{name}, 'エクスカリバー';
 
+subtest "adding yaml" => sub {
+    $m->load_fixture('t/data/item-2.yml');
+
+    my $result = $dbh->selectrow_arrayref('SELECT COUNT(*) FROM item');
+    is $result->[0], 4;
+
+    my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
+    is scalar @$rows, 4;
+    is $rows->[3]{name}, '正宗';
+};
+
+subtest "adding json" => sub {
+    $m->load_fixture('t/data/item-3.json');
+
+    my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
+    is scalar @$rows, 5;
+    is $rows->[4]{name}, 'グラディウス';
+};
+
+
+subtest "adding ar-ish yml" => sub {
+    $m->load_fixture('t/data/item-4.yaml');
+
+    my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
+    is scalar @$rows, 7;
+    is $rows->[6]{name}, 'ウィザードロッド';
+};
+
 done_testing;
 
 END {

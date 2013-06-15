@@ -36,7 +36,7 @@ has bulk_insert => (
     },
 );
 
-has sql_builder => (
+has _sql_builder => (
     is => 'lazy',
     default => sub {
         DBIx::FixtureManager::QueryBuilder->new(
@@ -72,6 +72,22 @@ sub load_fixture {
     if ($format eq 'csv') {
         $rows = $self->get_data_from_csv($file);
     }
+    else {
+        if ($format eq 'json') {
+            require JSON;
+            my $content = do {
+                local $/;
+                open my $fh, '<', $file or die $!;
+                <$fh>;
+            };
+            $rows = JSON::decode_json($content);
+        }
+        elsif ($format =~ /ya?ml/) {
+            require YAML::Tiny;
+            $rows = YAML::Tiny->read($file)->[0];
+        }
+        $rows = $self->_normalize_data($rows);
+    }
 
     $self->load_fixture_from_data(
         table => $table,
@@ -87,13 +103,13 @@ sub load_fixture_from_data {
     # needs limit ?
     $dbh->begin_work or croak $dbh->errstr;
     if ($self->bulk_insert) {
-        my ($sql, @binds) = $self->sql_builder->insert_multi( $table, $data );
+        my ($sql, @binds) = $self->_sql_builder->insert_multi( $table, $data );
 
         $dbh->do( $sql, undef, @binds ) or croak $dbh->errstr;
     }
     else {
         for my $row (@$data) {
-            my ($sql, @binds) = $self->sql_builder->insert($table, $row);
+            my ($sql, @binds) = $self->_sql_builder->insert($table, $row);
             $dbh->do( $sql, undef, @binds ) or croak $dbh->errstr;
         }
     }
@@ -116,6 +132,18 @@ sub get_data_from_csv {
         push @records, \%cols;
     }
     \@records;
+}
+
+sub _normalize_data {
+    my ($self, $data) = @_;
+    my @ret;
+    if (ref $data eq 'HASH') {
+        push @ret, $data->{$_} for keys %$data;
+    }
+    elsif (ref $data eq 'ARRAY') {
+        @ret = @$data;
+    }
+    \@ret;
 }
 
 package DBIx::FixtureManager::QueryBuilder;

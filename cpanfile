@@ -1,9 +1,12 @@
 requires 'DBI';
 requires 'Moo';
 requires 'SQL::Maker';
-requires 'Text::CSV';
 requires 'parent';
 requires 'perl', '5.008001';
+
+recommends 'Text::CSV';
+recommends 'JSON';
+recommends 'YAML::Tiny';
 
 on configure => sub {
     requires 'CPAN::Meta';
