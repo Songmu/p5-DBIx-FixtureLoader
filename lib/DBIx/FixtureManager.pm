@@ -86,7 +86,6 @@ sub load_fixture {
             require YAML::Tiny;
             $rows = YAML::Tiny->read($file)->[0];
         }
-        $rows = $self->_normalize_data($rows);
     }
 
     $self->load_fixture_from_data(
@@ -98,6 +97,7 @@ sub load_fixture {
 sub load_fixture_from_data {
     my ($self, %args) = @_;
     my ($table, $data) = @args{qw/table data/};
+    $data = $self->_normalize_data($data);
 
     my $dbh = $self->dbh;
     # needs limit ?
