@@ -45,9 +45,13 @@ has _sql_builder => (
     }
 );
 
+has update => (
+    is => 'ro',
+    default => sub { undef },
+);
+
 no Moo;
 
-# needs on duplicate key update ?
 sub load_fixture {
     my $self = shift;
 
@@ -89,8 +93,9 @@ sub load_fixture {
     }
 
     $self->load_fixture_from_data(
-        table => $table,
-        data  => $rows,
+        table  => $table,
+        data   => $rows,
+        update => $args{update},
     );
 }
 
@@ -98,22 +103,39 @@ sub load_fixture_from_data {
     my ($self, %args) = @_;
     my ($table, $data) = @args{qw/table data/};
     $data = $self->_normalize_data($data);
+    my $update = defined $args{update} ? $args{update} : $self->update;
+
+    if ($update && $self->driver_name ne 'mysql') {
+        croak '`update` option only supprt mysql'
+    }
 
     my $dbh = $self->dbh;
     # needs limit ?
     $dbh->begin_work or croak $dbh->errstr;
     if ($self->bulk_insert) {
         my ($sql, @binds) = $self->_sql_builder->insert_multi( $table, $data );
+        $sql .= _build_on_duplicate($data->[0]) if $self->update;
 
         $dbh->do( $sql, undef, @binds ) or croak $dbh->errstr;
     }
     else {
+        my $method = $update ? 'insert_on_duplicate' : 'insert';
         for my $row (@$data) {
-            my ($sql, @binds) = $self->_sql_builder->insert($table, $row);
+            my ($sql, @binds) = $self->_sql_builder->$method($table, $row);
+            $sql .= _build_on_duplicate($row) if $self->update;
+
             $dbh->do( $sql, undef, @binds ) or croak $dbh->errstr;
         }
     }
     $dbh->commit or croak $dbh->errstr;
+}
+
+sub _build_on_duplicate {
+    my $row_data = shift;
+
+    my $str = ' ON DUPLICATE KEY UPDATE ';
+       $str .= join ',', map {$_.'=VALUES(`'.$_.'`)'} keys %$row_data;
+    $str;
 }
 
 sub get_data_from_csv {
@@ -148,7 +170,7 @@ sub _normalize_data {
 
 package DBIx::FixtureManager::QueryBuilder;
 use parent 'SQL::Maker';
-__PACKAGE__->load_plugin('InsertMulti');
+__PACKAGE__->load_plugin(qw/InsertMulti InsertOnDuplicate/);
 
 1;
 __END__
