@@ -57,6 +57,10 @@ sub load_fixture {
     my $file = shift;
     my %opts = ref $_[0] ? %{$_[0]} : @_;
 
+    if (ref($file) =~ /^(?:ARRAY|HASH)$/) {
+        return $self->_load_fixture_from_data(data => $file, %opts);
+    }
+
     my $table = $opts{table};
     unless ($table) {
         my $basename = basename($file);
@@ -88,16 +92,16 @@ sub load_fixture {
         }
     }
 
-    $self->load_fixture_from_data(
+    $self->load_fixture($rows,
         table  => $table,
-        data   => $rows,
         update => $opts{update},
     );
 }
 
-sub load_fixture_from_data {
+sub _load_fixture_from_data {
     my ($self, %args) = @_;
     my ($table, $data) = @args{qw/table data/};
+
     $data = $self->_normalize_data($data);
     my $update = defined $args{update} ? $args{update} : $self->update;
 
