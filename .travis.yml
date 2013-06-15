@@ -1,6 +1,10 @@
 language: perl
 perl:
-  - 5.12
-  - 5.14
-  - 5.16
-
+  - "5.16"
+  - "5.14"
+  - "5.12"
+  - "5.10"
+before_install:
+  cpanm -n Devel::Cover::Report::Coveralls
+script:
+  perl Build.PL && ./Build build && cover -test -report coveralls
