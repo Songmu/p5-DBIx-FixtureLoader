@@ -51,41 +51,48 @@ no Moo;
 sub load_fixture {
     my $self = shift;
 
-    my ($file, %args);
-    if (@_ == 1) {
-        if (!ref $_[0]) {
-            $file = $_[0];
-        }
-        else {
-            %args = %{$_[0]};
-        }
-    }
-    else {
-        %args = @_;
-    }
-    $file = $args{file} unless $file;
+    my %args =
+        @_ > 1    ? @_              :
+        ref $_[0] ? %{$_[0]}        :
+                    (file => $_[0]) ;
+    my $file = $args{file};
 
-    my ($ext) = $file =~ /(\.[^.]*$)/;
-    my $rows;
-    if ($ext eq '.csv') {
-        $rows = _get_records_from_csv($file);
-    }
     my $table = $args{table};
     unless ($table) {
-        my $basename = basename($file, $ext);
+        my $basename = basename($file);
         ($table) = $basename =~ /^([_A-Za-z0-9]+)/;
     }
+
+    my $format = lc($args{format} || '');
+    unless ($format) {
+        ($format) = $file =~ /\.([^.]*$)/;
+    }
+
+    my $rows;
+    if ($format eq 'csv') {
+        $rows = $self->get_data_from_csv($file);
+    }
+
+    $self->load_fixture_from_data(
+        table => $table,
+        data  => $rows,
+    );
+}
+
+sub load_fixture_from_data {
+    my ($self, %args) = @_;
+    my ($table, $data) = @args{qw/table data/};
 
     my $dbh = $self->dbh;
     # needs limit ?
     $dbh->begin_work or croak $dbh->errstr;
     if ($self->bulk_insert) {
-        my ($sql, @binds) = $self->sql_builder->insert_multi( $table, $rows );
+        my ($sql, @binds) = $self->sql_builder->insert_multi( $table, $data );
 
         $dbh->do( $sql, undef, @binds ) or croak $dbh->errstr;
     }
     else {
-        for my $row (@$rows) {
+        for my $row (@$data) {
             my ($sql, @binds) = $self->sql_builder->insert($table, $row);
             $dbh->do( $sql, undef, @binds ) or croak $dbh->errstr;
         }
@@ -93,8 +100,8 @@ sub load_fixture {
     $dbh->commit or croak $dbh->errstr;
 }
 
-sub _get_records_from_csv {
-    my $file = shift;
+sub get_data_from_csv {
+    my ($self, $file) = @_;
     require Text::CSV;
     my $csv = Text::CSV->new({binary => 1});
 
@@ -110,7 +117,6 @@ sub _get_records_from_csv {
     }
     \@records;
 }
-
 
 package DBIx::FixtureManager::QueryBuilder;
 use parent 'SQL::Maker';
