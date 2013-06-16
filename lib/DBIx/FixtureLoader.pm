@@ -102,16 +102,16 @@ sub load_fixture {
 sub get_data_from_csv {
     my ($self, $file) = @_;
     require Text::CSV;
-    my $csv = Text::CSV->new({binary => 1});
+    my $csv = Text::CSV->new({
+        binary         => 1,
+        blank_is_undef => 1,
+    });
 
     open my $fh, '<', $file or die "$!";
     my $columns = $csv->getline($fh);
     my @records;
     while ( my $row = $csv->getline($fh) ){
-        my %cols =
-            map  { $columns->[$_] => $row->[$_] }
-            grep { defined($row->[$_]) && $row->[$_] ne '' } 0..$#$columns;
-
+        my %cols = map { $columns->[$_] => $row->[$_] } 0..$#$columns;
         push @records, \%cols;
     }
     \@records;
