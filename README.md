@@ -20,7 +20,7 @@ DBIx::FixtureLoader is to load fixture data and insert to your database.
 
 ## Constructor
 
-    C<< $loader = DBIx::FixtureLoader->new(%option) >>
+    $loader = DBIx::FixtureLoader->new(%option)
 
 `new` is Constructor method. Various options may be set in `%option`, which affect
 the behaviour of the object (Type and defaults in parentheses):
@@ -75,8 +75,8 @@ and containing data of "user\_item" table.
 
 "CSV", "YAML" and "JSON" are parsable. CSV file must have header line for determining column names.
 
-Datas in "YAML" or "JSON" must be ArrayRef<HashRef> or HashRef<HashRef>. HashRef is the data of database record
-and each keys of HashRef is matching to column names of the table.
+Datas in "YAML" or "JSON" must be ArrayRef or HashRef containing HashRefs. Each HashRef is the data
+of database record and keys of HashRef is matching to column names of the table.
 
 # LICENSE
 
