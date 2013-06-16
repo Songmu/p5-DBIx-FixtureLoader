@@ -18,7 +18,7 @@ has dbh => (
 );
 
 has bulk_insert => (
-    is => 'lazy',
+    is      => 'lazy',
     default => sub {
         my $self = shift;
         my $driver_name = $self->_driver_name;
@@ -30,19 +30,25 @@ has bulk_insert => (
 );
 
 has update => (
-    is => 'ro',
+    is      => 'ro',
     default => sub { undef },
 );
 
+has csv_option => (
+    is      => 'ro',
+    isa     => sub { ref $_[0] eq 'HASH' },
+    default => sub { {} },
+);
+
 has _driver_name => (
-    is => 'lazy',
+    is      => 'lazy',
     default => sub {
         shift->dbh->{Driver}{Name};
     },
 );
 
 has _sql_builder => (
-    is => 'lazy',
+    is      => 'lazy',
     default => sub {
         DBIx::FixtureLoader::QueryBuilder->new(
             driver => shift->_driver_name,
@@ -105,7 +111,8 @@ sub get_data_from_csv {
     my $csv = Text::CSV->new({
         binary         => 1,
         blank_is_undef => 1,
-    });
+        %{ $self->csv_option },
+    }) or croak( Text::CSV->error_diag );
 
     open my $fh, '<', $file or die "$!";
     my $columns = $csv->getline($fh);
