@@ -223,11 +223,11 @@ Required. Database handler.
 
 =head3 C<< bulk_insert (Bool) >>
 
-Using bulk_insert or not. Default value is depend on your database.
+Using bulk_insert or not. Default value depends on your database.
 
 =head3 C<< update (Bool, Default: false) >>
 
-Using C<< INSERT ON DUPLICATE >> or not. It can be used only works on C<mysql>.
+Using C<< INSERT ON DUPLICATE >> or not. It only works on MySQL.
 
 =head3 C<< csv_option (HashRef, Default: +{}) >>
 
@@ -286,4 +286,3 @@ it under the same terms as Perl itself.
 Masayuki Matsuki E<lt>y.songmu@gmail.comE<gt>
 
 =cut
-

@@ -31,11 +31,11 @@ Required. Database handler.
 
 ### `bulk_insert (Bool)`
 
-Using bulk\_insert or not. Default value is depend on your database.
+Using bulk\_insert or not. Default value depends on your database.
 
 ### `update (Bool, Default: false)`
 
-Using `INSERT ON DUPLICATE` or not. It can be used only works on `mysql`.
+Using `INSERT ON DUPLICATE` or not. It only works on MySQL.
 
 ### `csv_option (HashRef, Default: +{})`
 
