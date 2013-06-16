@@ -140,10 +140,10 @@ sub _load_fixture_from_data {
     $dbh->begin_work or croak $dbh->errstr;
     if ($self->bulk_insert) {
         my $opt;
-        if ($self->update) {
+        if ($update) {
             $opt->{update} = _build_on_duplicate(keys %{$data->[0]});
         }
-        my ($sql, @binds) = $self->_sql_builder->insert_multi( $table, $data, $opt );
+        my ($sql, @binds) = $self->_sql_builder->insert_multi($table, $data, $opt ? $opt : ());
 
         $dbh->do( $sql, undef, @binds ) or croak $dbh->errstr;
     }
@@ -151,8 +151,8 @@ sub _load_fixture_from_data {
         my $method = $update ? 'insert_on_duplicate' : 'insert';
         for my $row (@$data) {
             my $opt;
-            $opt = _build_on_duplicate(keys %$row);
-            my ($sql, @binds) = $self->_sql_builder->$method($table, $row, $opt);
+            $opt = _build_on_duplicate(keys %$row) if $update;
+            my ($sql, @binds) = $self->_sql_builder->$method($table, $row, $opt ? $opt : ());
 
             $dbh->do( $sql, undef, @binds ) or croak $dbh->errstr;
         }
