@@ -12,7 +12,7 @@ $dbh->do(q{
     CREATE TABLE item (
         id   INTEGER PRIMARY KEY,
         name VARCHAR(255)
-    );
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 });
 
 my $m = DBIx::FixtureManager->new(
