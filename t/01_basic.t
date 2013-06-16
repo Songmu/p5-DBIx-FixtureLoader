@@ -60,6 +60,14 @@ subtest "adding ar-ish yml" => sub {
     is $rows->[6]{name}, 'ウィザードロッド';
 };
 
+subtest "adding Test::Fixtures::DBI" => sub {
+    $m->load_fixture('t/data/item-5-fixture-dbi.txt', format => 'yaml');
+
+    my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
+    is scalar @$rows, 9;
+    is $rows->[8]{name}, '賢者の杖';
+};
+
 subtest "can't set update option" => sub {
     my $m = DBIx::FixtureLoader->new(
         dbh => $dbh,

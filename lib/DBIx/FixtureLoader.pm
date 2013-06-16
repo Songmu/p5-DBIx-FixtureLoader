@@ -163,7 +163,12 @@ sub _normalize_data {
         push @ret, $data->{$_} for keys %$data;
     }
     elsif (ref $data eq 'ARRAY') {
-        @ret = @$data;
+        if ($data->[0] && $data->[0]{data} && ref $data->[0]{data} eq 'HASH') {
+            @ret = map { $_->{data} } @$data;
+        }
+        else {
+            @ret = @$data;
+        }
     }
     \@ret;
 }
