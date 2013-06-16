@@ -23,8 +23,8 @@ my %args = (
         'Module::Build' => 0.38,
     },
 
-    name            => 'DBIx-FixtureManager',
-    module_name     => 'DBIx::FixtureManager',
+    name            => 'DBIx-FixtureLoader',
+    module_name     => 'DBIx::FixtureLoader',
     allow_pureperl => 0,
 
     script_files => [glob('script/*'), glob('bin/*')],

@@ -3,7 +3,7 @@ use warnings;
 use utf8;
 use Test::More;
 use DBI;
-use DBIx::FixtureManager;
+use DBIx::FixtureLoader;
 use Test::Requires 'Test::mysqld';
 
 my $mysqld = Test::mysqld->new(my_cnf => {'skip-networking' => ''}) or plan skip_all => $Test::mysqld::errstr;
@@ -15,11 +15,11 @@ $dbh->do(q{
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 });
 
-my $m = DBIx::FixtureManager->new(
+my $m = DBIx::FixtureLoader->new(
     dbh         => $dbh,
     bulk_insert => 0,
 );
-isa_ok $m, 'DBIx::FixtureManager';
+isa_ok $m, 'DBIx::FixtureLoader';
 is $m->_driver_name, 'mysql';
 ok !$m->bulk_insert;
 
@@ -33,7 +33,7 @@ is scalar @$rows, 2;
 is $rows->[0]{name}, 'エクスカリバー';
 
 subtest update => sub {
-    my $m = DBIx::FixtureManager->new(
+    my $m = DBIx::FixtureLoader->new(
         dbh         => $dbh,
         bulk_insert => 0,
         update      => 1,

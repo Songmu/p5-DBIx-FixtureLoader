@@ -1,14 +1,14 @@
 # NAME
 
-DBIx::FixtureManager - It's new $module
+DBIx::FixtureLoader - It's new $module
 
 # SYNOPSIS
 
-    use DBIx::FixtureManager;
+    use DBIx::FixtureLoader;
 
 # DESCRIPTION
 
-DBIx::FixtureManager is ...
+DBIx::FixtureLoader is ...
 
 # LICENSE
 

@@ -1,4 +1,4 @@
-package DBIx::FixtureManager;
+package DBIx::FixtureLoader;
 use 5.008001;
 use strict;
 use warnings;
@@ -44,7 +44,7 @@ has _driver_name => (
 has _sql_builder => (
     is => 'lazy',
     default => sub {
-        DBIx::FixtureManager::QueryBuilder->new(
+        DBIx::FixtureLoader::QueryBuilder->new(
             driver => shift->_driver_name,
         );
     }
@@ -168,7 +168,7 @@ sub _normalize_data {
     \@ret;
 }
 
-package DBIx::FixtureManager::QueryBuilder;
+package DBIx::FixtureLoader::QueryBuilder;
 use parent 'SQL::Maker';
 __PACKAGE__->load_plugin('InsertMulti');
 __PACKAGE__->load_plugin('InsertOnDuplicate');
@@ -180,15 +180,15 @@ __END__
 
 =head1 NAME
 
-DBIx::FixtureManager - It's new $module
+DBIx::FixtureLoader - It's new $module
 
 =head1 SYNOPSIS
 
-    use DBIx::FixtureManager;
+    use DBIx::FixtureLoader;
 
 =head1 DESCRIPTION
 
-DBIx::FixtureManager is ...
+DBIx::FixtureLoader is ...
 
 =head1 LICENSE
 

@@ -3,7 +3,7 @@ use warnings;
 use utf8;
 use Test::More;
 use DBI;
-use DBIx::FixtureManager;
+use DBIx::FixtureLoader;
 use Test::Requires 'DBD::SQLite';
 
 my $test_db = 'loader.db';
@@ -17,10 +17,10 @@ $dbh->do(q{
     );
 });
 
-my $m = DBIx::FixtureManager->new(
+my $m = DBIx::FixtureLoader->new(
     dbh => $dbh,
 );
-isa_ok $m, 'DBIx::FixtureManager';
+isa_ok $m, 'DBIx::FixtureLoader';
 is $m->_driver_name, 'SQLite';
 ok !$m->bulk_insert;
 
