@@ -20,7 +20,7 @@ my $m = DBIx::FixtureManager->new(
     bulk_insert => 0,
 );
 isa_ok $m, 'DBIx::FixtureManager';
-is $m->driver_name, 'mysql';
+is $m->_driver_name, 'mysql';
 ok !$m->bulk_insert;
 
 $m->load_fixture('t/data/item.csv');

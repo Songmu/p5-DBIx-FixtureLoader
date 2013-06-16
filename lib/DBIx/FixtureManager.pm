@@ -17,18 +17,11 @@ has dbh => (
     required => 1,
 );
 
-has driver_name => (
-    is => 'lazy',
-    default => sub {
-        shift->dbh->{Driver}{Name};
-    },
-);
-
 has bulk_insert => (
     is => 'lazy',
     default => sub {
         my $self = shift;
-        my $driver_name = $self->driver_name;
+        my $driver_name = $self->_driver_name;
         my $dbh         = $self->dbh;
         $driver_name eq 'mysql'                                      ? 1 :
         $driver_name eq 'Pg' && $dbh->{ pg_server_version } >= 82000 ? 1 :
@@ -36,18 +29,25 @@ has bulk_insert => (
     },
 );
 
+has update => (
+    is => 'ro',
+    default => sub { undef },
+);
+
+has _driver_name => (
+    is => 'lazy',
+    default => sub {
+        shift->dbh->{Driver}{Name};
+    },
+);
+
 has _sql_builder => (
     is => 'lazy',
     default => sub {
         DBIx::FixtureManager::QueryBuilder->new(
-            driver => shift->driver_name,
+            driver => shift->_driver_name,
         );
     }
-);
-
-has update => (
-    is => 'ro',
-    default => sub { undef },
 );
 
 no Moo;
@@ -98,6 +98,24 @@ sub load_fixture {
     );
 }
 
+sub get_data_from_csv {
+    my ($self, $file) = @_;
+    require Text::CSV;
+    my $csv = Text::CSV->new({binary => 1});
+
+    open my $fh, '<', $file or die "$!";
+    my $columns = $csv->getline($fh);
+    my @records;
+    while ( my $row = $csv->getline($fh) ){
+        my %cols =
+            map  { $columns->[$_] => $row->[$_] }
+            grep { defined($row->[$_]) && $row->[$_] ne '' } 0..$#$columns;
+
+        push @records, \%cols;
+    }
+    \@records;
+}
+
 sub _load_fixture_from_data {
     my ($self, %args) = @_;
     my ($table, $data) = @args{qw/table data/};
@@ -105,7 +123,7 @@ sub _load_fixture_from_data {
     $data = $self->_normalize_data($data);
     my $update = defined $args{update} ? $args{update} : $self->update;
 
-    if ($update && $self->driver_name ne 'mysql') {
+    if ($update && $self->_driver_name ne 'mysql') {
         croak '`update` option only supprt mysql'
     }
 
@@ -136,24 +154,6 @@ sub _load_fixture_from_data {
 
 sub _build_on_duplicate {
     +{ map {($_ => \"VALUES(`$_`)")} @_ };
-}
-
-sub get_data_from_csv {
-    my ($self, $file) = @_;
-    require Text::CSV;
-    my $csv = Text::CSV->new({binary => 1});
-
-    open my $fh, '<', $file or die "$!";
-    my $columns = $csv->getline($fh);
-    my @records;
-    while ( my $row = $csv->getline($fh) ){
-        my %cols =
-            map  { $columns->[$_] => $row->[$_] }
-            grep { defined($row->[$_]) && $row->[$_] ne '' } 0..$#$columns;
-
-        push @records, \%cols;
-    }
-    \@records;
 }
 
 sub _normalize_data {
