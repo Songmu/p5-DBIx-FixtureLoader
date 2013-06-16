@@ -1,5 +1,5 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "Loading fixtures and inserting to your database",
    "author" : [
       "Masayuki Matsuki <y.songmu@gmail.com>"
    ],
@@ -64,13 +64,13 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/Songmu/p5-DBIx-FixtureManager/issues"
+         "web" : "https://github.com/Songmu/p5-DBIx-FixtureLoader/issues"
       },
-      "homepage" : "https://github.com/Songmu/p5-DBIx-FixtureManager",
+      "homepage" : "https://github.com/Songmu/p5-DBIx-FixtureLoader",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/Songmu/p5-DBIx-FixtureManager.git",
-         "web" : "https://github.com/Songmu/p5-DBIx-FixtureManager"
+         "url" : "git://github.com/Songmu/p5-DBIx-FixtureLoader.git",
+         "web" : "https://github.com/Songmu/p5-DBIx-FixtureLoader"
       }
    },
    "version" : "0.01"

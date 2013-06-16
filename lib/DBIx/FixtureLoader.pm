@@ -7,7 +7,7 @@ our $VERSION = "0.01";
 
 use File::Basename qw/basename/;
 use SQL::Maker;
-use Carp;
+use Carp qw/croak/;
 
 use Moo;
 
@@ -80,7 +80,7 @@ sub load_fixture {
 
     my $rows;
     if ($format eq 'csv') {
-        $rows = $self->get_data_from_csv($file);
+        $rows = $self->_get_data_from_csv($file);
     }
     else {
         if ($format eq 'json') {
@@ -105,7 +105,7 @@ sub load_fixture {
     );
 }
 
-sub get_data_from_csv {
+sub _get_data_from_csv {
     my ($self, $file) = @_;
     require Text::CSV;
     my $csv = Text::CSV->new({
@@ -193,15 +193,86 @@ __END__
 
 =head1 NAME
 
-DBIx::FixtureLoader - It's new $module
+DBIx::FixtureLoader - Loading fixtures and inserting to your database
 
 =head1 SYNOPSIS
 
+    use DBI;
     use DBIx::FixtureLoader;
+    
+    my $dbh = DBI->connect(...);
+    my $loader = DBIx::FixtureLoader->new(dbh => $dbh);
+    $loader->load_fixture('item.csv');
 
 =head1 DESCRIPTION
 
-DBIx::FixtureLoader is ...
+DBIx::FixtureLoader is to load fixture data and insert to your database.
+
+=head1 INTEFACE
+
+=head2 Constructor
+
+    C<< $loader = DBIx::FixtureLoader->new(%option) >>
+
+C<new> is Constructor method. Various options may be set in C<%option>, which affect
+the behaviour of the object (Type and defaults in parentheses):
+
+=head3 C<< dbh (DBI::db) >>
+
+Required. Database handler.
+
+=head3 C<< bulk_insert (Bool) >>
+
+Using bulk_insert or not. Default value is depend on your database.
+
+=head3 C<< update (Bool, Default: false) >>
+
+Using C<< INSERT ON DUPLICATE >> or not. It can be used only works on C<mysql>.
+
+=head3 C<< csv_option (HashRef, Default: +{}) >>
+
+Specifying L<Text::CSV>'s option. C<binary> and C<blank_is_undef>
+are automatically set.
+
+=head2 Methods
+
+=head3 C<< $loader->load_fixture($file_or_data:(Str|HashRef|ArrayRef), [%option]) >>
+
+Loading fixture and inserting to your database. Table name and file format is guessed from
+file name. For example, "item.csv" contains data of "item" table and format is "CSV".
+
+In most cases C<%option> is not needed. Available keys of C<%option> are as follows.
+
+=over
+
+=item C<table:Str>
+
+table name of database.
+
+=item C<format:Str>
+
+data format. "CSV", "YAML" and "JSON" are available.
+
+=item C<update:Bool>
+
+Using C<< ON DUPLICATE KEY UPDATE >> or not. Default value depends on object setting.
+
+=back
+
+=head2 File Name and Data Format
+
+=head3 file name
+
+Data format is guessed from extension. Table name is guessed from basename. Leading alphabets,
+underscores and numbers are considered table name. So, C<"user_item-2.csv"> is considered CSV format
+and containing data of "user_item" table.
+
+=head3 data format
+
+"CSV", "YAML" and "JSON" are parsable. CSV file must have header line for determining column names.
+
+Datas in "YAML" or "JSON" must be ArrayRef<HashRef> or HashRef<HashRef>. HashRef is the data of database record
+and each keys of HashRef is matching to column names of the table.
 
 =head1 LICENSE
 
