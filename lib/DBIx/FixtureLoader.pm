@@ -88,7 +88,8 @@ sub load_fixture {
         }
         elsif ($format =~ /ya?ml/) {
             require YAML::Tiny;
-            $rows = YAML::Tiny->read($file)->[0];
+            $rows = YAML::Tiny->read($file) or croak( YAML::Tiny->errstr );
+            $rows = $rows->[0];
         }
     }
 
