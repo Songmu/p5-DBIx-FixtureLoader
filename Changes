@@ -2,5 +2,9 @@ Revision history for Perl extension DBIx-FixtureLoader
 
 {{$NEXT}}
 
+0.02 2013-06-16T16:09:52Z
+    - fix `update` option handling
+    - update document
+
 0.01 2013-06-16T14:10:00Z
     - original version
