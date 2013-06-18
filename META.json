@@ -47,7 +47,7 @@
             "DBI" : "0",
             "JSON" : "0",
             "Moo" : "0",
-            "SQL::Maker" : "0",
+            "SQL::Maker" : "1.09",
             "Text::CSV" : "0",
             "YAML::Tiny" : "0",
             "parent" : "0",
@@ -73,5 +73,5 @@
          "web" : "https://github.com/Songmu/p5-DBIx-FixtureLoader"
       }
    },
-   "version" : "0.02"
+   "version" : "0.03"
 }
