@@ -5,10 +5,7 @@ use DBI;
 use DBIx::FixtureLoader;
 use Test::Requires 'DBD::SQLite';
 
-my $test_db = 'loader.db';
-unlink $test_db if -f $test_db;
-
-my $dbh = DBI->connect("dbi:SQLite:./$test_db", '', '', {RaiseError => 1}) or die 'cannot connect to db';
+my $dbh = DBI->connect("dbi:SQLite::memory:", '', '', {RaiseError => 1}) or die 'cannot connect to db';
 $dbh->do(q{
     CREATE TABLE item (
         id   INTEGER PRIMARY KEY,
@@ -82,7 +79,3 @@ subtest "can't set update option" => sub {
 };
 
 done_testing;
-
-END {
-    unlink $test_db if -f $test_db;
-}

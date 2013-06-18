@@ -1,6 +1,6 @@
 requires 'DBI';
 requires 'Moo';
-requires 'SQL::Maker';
+requires 'SQL::Maker', '1.09';
 requires 'parent';
 requires 'perl', '5.008001';
 requires 'Text::CSV';

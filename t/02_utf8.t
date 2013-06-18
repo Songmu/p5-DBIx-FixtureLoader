@@ -4,12 +4,9 @@ use utf8;
 use Test::More;
 use DBI;
 use DBIx::FixtureLoader;
-use Test::Requires 'DBD::SQLite';
+use Test::Requires {'DBD::SQLite' => 1.27};
 
-my $test_db = 'loader.db';
-unlink $test_db if -f $test_db;
-
-my $dbh = DBI->connect("dbi:SQLite:./$test_db", '', '', {RaiseError => 1, sqlite_unicode => 1}) or die 'cannot connect to db';
+my $dbh = DBI->connect("dbi:SQLite::memory:", '', '', {RaiseError => 1, sqlite_unicode => 1}) or die 'cannot connect to db';
 $dbh->do(q{
     CREATE TABLE item (
         id   INTEGER PRIMARY KEY,
@@ -34,7 +31,3 @@ is scalar @$rows, 2;
 is $rows->[0]{name}, 'エクスカリバー';
 
 done_testing;
-
-END {
-    unlink $test_db if -f $test_db;
-}
