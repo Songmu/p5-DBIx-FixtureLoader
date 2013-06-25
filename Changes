@@ -2,6 +2,9 @@ Revision history for Perl extension DBIx-FixtureLoader
 
 {{$NEXT}}
 
+0.04 2013-06-25T14:04:35Z
+    - add `ignore` option for `INSERT IGNORE INTO`
+
 0.03 2013-06-18T04:41:17Z
     - fix up dependencies
 

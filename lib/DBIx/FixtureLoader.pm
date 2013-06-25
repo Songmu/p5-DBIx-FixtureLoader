@@ -3,7 +3,7 @@ use 5.008001;
 use strict;
 use warnings;
 
-our $VERSION = "0.03";
+our $VERSION = "0.04";
 
 use File::Basename qw/basename/;
 use Carp qw/croak/;
@@ -141,9 +141,21 @@ sub _load_fixture_from_data {
     my ($self, %args) = @_;
     my ($table, $data) = @args{qw/table data/};
 
-    my $update = exists $args{update} ? $args{update} : $self->update;
-    my $ignore = exists $args{ignore} ? $args{ignore} : $self->ignore;
+    croak '`update` and `ignore` are exclusive option' if $args{update} && $args{ignore};
+
+    my $update = $self->update;
+    my $ignore = $self->ignore;
     croak '`update` and `ignore` are exclusive option' if $update && $ignore;
+
+    if (exists $args{update}) {
+        $update = $args{update};
+        $ignore = undef if $update;
+    }
+    if (exists $args{ignore}) {
+        $ignore = $args{ignore};
+        $update = undef if $ignore;
+    }
+
     if ($update && $self->_driver_name ne 'mysql') {
         croak '`update` option only support mysql'
     }
@@ -238,6 +250,10 @@ Using bulk_insert or not. Default value depends on your database.
 
 Using C<< INSERT ON DUPLICATE >> or not. It only works on MySQL.
 
+=head3 C<< ignore (Bool, Default: false) >>
+
+Using C<< INSERT IGNORE >> or not. This option is exclusive with C<update>.
+
 =head3 C<< csv_option (HashRef, Default: +{}) >>
 
 Specifying L<Text::CSV>'s option. C<binary> and C<blank_is_undef>
@@ -265,6 +281,10 @@ data format. "CSV", "YAML" and "JSON" are available.
 =item C<update:Bool>
 
 Using C<< ON DUPLICATE KEY UPDATE >> or not. Default value depends on object setting.
+
+=item C<< ignore:Bool >>
+
+Using C<< INSERT IGNORE >> or not.
 
 =back
 

@@ -37,6 +37,10 @@ Using bulk\_insert or not. Default value depends on your database.
 
 Using `INSERT ON DUPLICATE` or not. It only works on MySQL.
 
+### `ignore (Bool, Default: false)`
+
+Using `INSERT IGNORE` or not. This option is exclusive with `update`.
+
 ### `csv_option (HashRef, Default: +{})`
 
 Specifying [Text::CSV](http://search.cpan.org/perldoc?Text::CSV)'s option. `binary` and `blank_is_undef`
@@ -62,6 +66,10 @@ In most cases `%option` is not needed. Available keys of `%option` are as follow
 - `update:Bool`
 
     Using `ON DUPLICATE KEY UPDATE` or not. Default value depends on object setting.
+
+- `ignore:Bool`
+
+    Using `INSERT IGNORE` or not.
 
 ## File Name and Data Format
 
