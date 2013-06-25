@@ -37,6 +37,11 @@ has update => (
     default => sub { undef },
 );
 
+has ignore => (
+    is      => 'ro',
+    default => sub { undef },
+);
+
 has csv_option => (
     is      => 'ro',
     isa     => sub { ref $_[0] eq 'HASH' },
@@ -66,17 +71,22 @@ sub load_fixture {
     my $file = shift;
     my %opts = ref $_[0] ? %{$_[0]} : @_;
 
+    my $update = $opts{update};
+    my $ignore = $opts{ignore};
+    croak '`update` and `ignore` are exclusive argument' if $update && $ignore;
+
     if (ref($file) =~ /^(?:ARRAY|HASH)$/) {
         return $self->_load_fixture_from_data(data => $file, %opts);
     }
 
-    my $table = $opts{table};
+    my $table  = $opts{table};
+    my $format = lc($opts{format} || '');
+
     unless ($table) {
         my $basename = basename($file);
         ($table) = $basename =~ /^([_A-Za-z0-9]+)/;
     }
 
-    my $format = lc($opts{format} || '');
     unless ($format) {
         ($format) = $file =~ /\.([^.]*$)/;
     }
@@ -104,7 +114,7 @@ sub load_fixture {
 
     $self->load_fixture($rows,
         table  => $table,
-        update => $opts{update},
+        %opts,
     );
 }
 
@@ -131,21 +141,23 @@ sub _load_fixture_from_data {
     my ($self, %args) = @_;
     my ($table, $data) = @args{qw/table data/};
 
-    $data = $self->_normalize_data($data);
-    my $update = defined $args{update} ? $args{update} : $self->update;
-
+    my $update = exists $args{update} ? $args{update} : $self->update;
+    my $ignore = exists $args{ignore} ? $args{ignore} : $self->ignore;
+    croak '`update` and `ignore` are exclusive option' if $update && $ignore;
     if ($update && $self->_driver_name ne 'mysql') {
-        croak '`update` option only supprt mysql'
+        croak '`update` option only support mysql'
     }
+
+    $data = $self->_normalize_data($data);
 
     my $dbh = $self->dbh;
     # needs limit ?
     $dbh->begin_work or croak $dbh->errstr;
+
+    my $opt; $opt->{prefix} = 'INSERT IGNORE INTO' if $ignore;
     if ($self->bulk_insert) {
-        my $opt;
-        if ($update) {
-            $opt->{update} = _build_on_duplicate(keys %{$data->[0]});
-        }
+        $opt->{update} = _build_on_duplicate(keys %{$data->[0]}) if $update;
+
         my ($sql, @binds) = $self->_sql_builder->insert_multi($table, $data, $opt ? $opt : ());
 
         $dbh->do( $sql, undef, @binds ) or croak $dbh->errstr;
@@ -153,7 +165,6 @@ sub _load_fixture_from_data {
     else {
         my $method = $update ? 'insert_on_duplicate' : 'insert';
         for my $row (@$data) {
-            my $opt;
             $opt = _build_on_duplicate(keys %$row) if $update;
             my ($sql, @binds) = $self->_sql_builder->$method($table, $row, $opt ? $opt : ());
 
