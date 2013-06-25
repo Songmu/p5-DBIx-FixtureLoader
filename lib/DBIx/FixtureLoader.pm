@@ -6,8 +6,11 @@ use warnings;
 our $VERSION = "0.03";
 
 use File::Basename qw/basename/;
-use SQL::Maker;
 use Carp qw/croak/;
+
+use SQL::Maker;
+SQL::Maker->load_plugin('InsertMulti');
+SQL::Maker->load_plugin('InsertOnDuplicate');
 
 use Moo;
 
@@ -50,7 +53,7 @@ has _driver_name => (
 has _sql_builder => (
     is      => 'lazy',
     default => sub {
-        DBIx::FixtureLoader::QueryBuilder->new(
+        SQL::Maker->new(
             driver => shift->_driver_name,
         );
     }
@@ -180,11 +183,6 @@ sub _normalize_data {
     }
     \@ret;
 }
-
-package DBIx::FixtureLoader::QueryBuilder;
-use parent 'SQL::Maker';
-__PACKAGE__->load_plugin('InsertMulti');
-__PACKAGE__->load_plugin('InsertOnDuplicate');
 
 1;
 __END__
