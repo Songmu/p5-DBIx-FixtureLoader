@@ -2,6 +2,10 @@ Revision history for Perl extension DBIx-FixtureLoader
 
 {{$NEXT}}
 
+0.05 2013-06-26T01:38:31Z
+    - forcing Text::CSV_PP in 02_utf.t and 03_mysql.t if $Text::CSV_XS::VERSION < 1.00. ref #1
+      (Thank eserte for reporting)
+
 0.04 2013-06-25T14:04:35Z
     - add `ignore` option for `INSERT IGNORE INTO`
 
