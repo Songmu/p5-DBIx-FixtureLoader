@@ -2,6 +2,14 @@ use strict;
 use warnings;
 use utf8;
 use Test::More;
+BEGIN {
+    local $@;
+    eval {require Text::CSV_XS};
+    unless ($@) {
+        note 'Text::CSV_XS version 0.99 or under has utf8 problem. force Text::CVS_PP.';
+        $ENV{PERL_TEXT_CSV} = 'Text::CSV_PP' if $Text::CSV_XS::VERSION < 1.00;
+    }
+}
 use DBI;
 use DBIx::FixtureLoader;
 use Test::Requires {'DBD::SQLite' => 1.27};

@@ -2,13 +2,20 @@ use strict;
 use warnings;
 use utf8;
 use Test::More;
+BEGIN {
+    local $@;
+    eval {require Text::CSV_XS};
+    unless ($@) {
+        note 'Text::CSV_XS version 0.99 or under has utf8 problem. force Text::CVS_PP.';
+        $ENV{PERL_TEXT_CSV} = 'Text::CSV_PP' if $Text::CSV_XS::VERSION < 1.00;
+    }
+}
 use DBI;
 use DBIx::FixtureLoader;
 use Test::Requires 'Test::mysqld';
 
 my $mysqld = Test::mysqld->new(my_cnf => {'skip-networking' => ''}) or plan skip_all => $Test::mysqld::errstr;
 my $dbh = DBI->connect($mysqld->dsn, '', '', {RaiseError => 1, mysql_enable_utf8 => 1}) or die 'cannot connect to db';
-
 
 for my $cond ([], [bulk_insert => 0]) {
     my @cond = @$cond;
