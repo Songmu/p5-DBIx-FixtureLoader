@@ -12,7 +12,7 @@ BEGIN {
 }
 use DBI;
 use DBIx::FixtureLoader;
-use Test::Requires {'DBD::SQLite' => 1.27};
+use Test::Requires {'DBD::SQLite' => 1.31};
 
 my $dbh = DBI->connect("dbi:SQLite::memory:", '', '', {RaiseError => 1, sqlite_unicode => 1}) or die 'cannot connect to db';
 $dbh->do(q{
