@@ -4,7 +4,7 @@
       "Masayuki Matsuki <y.songmu@gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v0.5.3, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Minilla/v0.5.3, CPAN::Meta::Converter version 2.131560",
    "license" : [
       "perl_5"
    ],
@@ -64,14 +64,14 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/Songmu/p5-DBIx-FixtureLoader/issues"
+         "web" : "https://github.com/Songmu/p5-DBIx-FixtureManager/issues"
       },
-      "homepage" : "https://github.com/Songmu/p5-DBIx-FixtureLoader",
+      "homepage" : "https://github.com/Songmu/p5-DBIx-FixtureManager",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/Songmu/p5-DBIx-FixtureLoader.git",
-         "web" : "https://github.com/Songmu/p5-DBIx-FixtureLoader"
+         "url" : "git://github.com/Songmu/p5-DBIx-FixtureManager.git",
+         "web" : "https://github.com/Songmu/p5-DBIx-FixtureManager"
       }
    },
-   "version" : "0.05"
+   "version" : "0.06"
 }
