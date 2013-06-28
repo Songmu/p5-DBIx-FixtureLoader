@@ -16,23 +16,20 @@ $dbh->do(q{
 my $m = DBIx::FixtureLoader->new(
     dbh => $dbh,
 );
-isa_ok $m, 'DBIx::FixtureLoader';
-is $m->_driver_name, 'SQLite';
-ok !$m->bulk_insert;
 
 $m->load_fixture('t/data/item.csv');
 
 my $result = $dbh->selectrow_arrayref('SELECT COUNT(*) FROM item');
 is $result->[0], 2;
 
-my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
+my $rows = $dbh->selectall_arrayref('SELECT * FROM item ORDER BY id;', {Slice => {}});
 is scalar @$rows, 2;
 is $rows->[0]{name}, 'エクスカリバー';
 
 subtest "adding yaml" => sub {
     $m->load_fixture('t/data/item-2.yml');
 
-    my $result = $dbh->selectrow_arrayref('SELECT COUNT(*) FROM item');
+    my $result = $dbh->selectrow_arrayref('SELECT COUNT(*) FROM item ORDER BY id;');
     is $result->[0], 4;
 
     my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
@@ -43,7 +40,7 @@ subtest "adding yaml" => sub {
 subtest "adding json" => sub {
     $m->load_fixture('t/data/item-3.json');
 
-    my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
+    my $rows = $dbh->selectall_arrayref('SELECT * FROM item ORDER BY id;', {Slice => {}});
     is scalar @$rows, 5;
     is $rows->[4]{name}, 'グラディウス';
 };

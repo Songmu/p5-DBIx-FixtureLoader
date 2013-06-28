@@ -41,10 +41,10 @@ for my $cond ([], [bulk_insert => 0]) {
 
     $m->load_fixture('t/data/item.csv');
 
-    my $result = $dbh->selectrow_arrayref('SELECT COUNT(*) FROM item');
+    my $result = $dbh->selectrow_arrayref('SELECT COUNT(*) FROM item ORDER BY id;');
     is $result->[0], 2;
 
-    my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
+    my $rows = $dbh->selectall_arrayref('SELECT * FROM item ORDER BY id;', {Slice => {}});
     is scalar @$rows, 2;
     is $rows->[0]{name}, 'エクスカリバー';
 
@@ -56,7 +56,7 @@ for my $cond ([], [bulk_insert => 0]) {
         );
         $m->load_fixture('t/data/item-update.csv');
 
-        my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
+        my $rows = $dbh->selectall_arrayref('SELECT * FROM item ORDER BY id;', {Slice => {}});
         is scalar @$rows, 2;
         is $rows->[0]{name}, 'エクスカリパー';
     };
@@ -69,7 +69,7 @@ for my $cond ([], [bulk_insert => 0]) {
         );
         $m->load_fixture('t/data/item.csv', ignore => 1);
 
-        my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
+        my $rows = $dbh->selectall_arrayref('SELECT * FROM item ORDER BY id;', {Slice => {}});
         is scalar @$rows, 2;
         is $rows->[0]{name}, 'エクスカリパー';
     };
