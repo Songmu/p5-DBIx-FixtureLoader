@@ -2,6 +2,9 @@ Revision history for Perl extension DBIx-FixtureLoader
 
 {{$NEXT}}
 
+0.07 2013-07-10T08:25:17Z
+    - fix test case (02_utf8.t) only
+
 0.06 2013-06-28T16:54:12Z
     - fix test case only
 
