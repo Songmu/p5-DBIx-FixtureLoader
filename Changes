@@ -2,6 +2,9 @@ Revision history for Perl extension DBIx-FixtureLoader
 
 {{$NEXT}}
 
+0.08 2013-09-04T04:43:18Z
+    - fix error for handling empty data file (taiyoh)
+
 0.07 2013-07-10T08:25:17Z
     - fix test case (02_utf8.t) only
 
