@@ -161,6 +161,7 @@ sub _load_fixture_from_data {
     }
 
     $data = $self->_normalize_data($data);
+    return unless @$data;
 
     my $dbh = $self->dbh;
     # needs limit ?
