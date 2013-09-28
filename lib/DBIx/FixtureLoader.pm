@@ -275,6 +275,12 @@ Using C<< INSERT IGNORE >> or not. This option is exclusive with C<update>.
 Specifying L<Text::CSV>'s option. C<binary> and C<blank_is_undef>
 are automatically set.
 
+=head3 C<< skip_null_column (Bool, Default: false) >>
+
+If true, null data is not to be inserted or updated explicitly. It it for using default value.
+
+NOTE: If this option is true, data can't be overwritten by null value.
+
 =head2 Methods
 
 =head3 C<< $loader->load_fixture($file_or_data:(Str|HashRef|ArrayRef), [%option]) >>
