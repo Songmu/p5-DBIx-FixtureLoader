@@ -1,6 +1,7 @@
 Revision history for Perl extension DBIx-FixtureLoader
 
 {{$NEXT}}
+    - add `skip_null_column` constructor option
 
 0.08 2013-09-04T04:43:18Z
     - fix error for handling empty data file (taiyoh)

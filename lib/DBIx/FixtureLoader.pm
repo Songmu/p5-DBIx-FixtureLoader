@@ -24,6 +24,8 @@ has bulk_insert => (
     is      => 'lazy',
     default => sub {
         my $self = shift;
+        return undef if $self->skip_null_column;
+
         my $driver_name = $self->_driver_name;
         my $dbh         = $self->dbh;
         $driver_name eq 'mysql'                                      ? 1 :
@@ -38,6 +40,11 @@ has update => (
 );
 
 has ignore => (
+    is      => 'ro',
+    default => sub { undef },
+);
+
+has skip_null_column => (
     is      => 'ro',
     default => sub { undef },
 );
@@ -147,6 +154,11 @@ sub _load_fixture_from_data {
     my $ignore = $self->ignore;
     croak '`update` and `ignore` are exclusive option' if $update && $ignore;
 
+    my $bulk_insert      = $self->bulk_insert;
+    my $skip_null_column = $self->skip_null_column;
+    croak '`bulk_insert` and `skip_null_column` are exclusive option' if $bulk_insert && $skip_null_column;
+
+    # The $args has priority. So default object property is ignored.
     if (exists $args{update}) {
         $update = $args{update};
         $ignore = undef if $update;
@@ -168,7 +180,7 @@ sub _load_fixture_from_data {
     $dbh->begin_work or croak $dbh->errstr;
 
     my $opt; $opt->{prefix} = 'INSERT IGNORE INTO' if $ignore;
-    if ($self->bulk_insert) {
+    if ($bulk_insert) {
         $opt->{update} = _build_on_duplicate(keys %{$data->[0]}) if $update;
 
         my ($sql, @binds) = $self->_sql_builder->insert_multi($table, $data, $opt ? $opt : ());
@@ -177,7 +189,10 @@ sub _load_fixture_from_data {
     }
     else {
         my $method = $update ? 'insert_on_duplicate' : 'insert';
-        for my $row (@$data) {
+        for my $row_orig (@$data) {
+            my $row = !$skip_null_column ? $row_orig : {map {
+                defined $row_orig->{$_} ? ($_ => $row_orig->{$_}) : ()
+            } keys %$row_orig};
             $opt = _build_on_duplicate(keys %$row) if $update;
             my ($sql, @binds) = $self->_sql_builder->$method($table, $row, $opt ? $opt : ());
 
