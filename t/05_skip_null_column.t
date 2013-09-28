@@ -20,12 +20,13 @@ use Test::Requires 'Test::mysqld';
 my $mysqld = Test::mysqld->new(my_cnf => {'skip-networking' => ''}) or plan skip_all => $Test::mysqld::errstr;
 my $dbh = DBI->connect($mysqld->dsn, '', '', {RaiseError => 1, mysql_enable_utf8 => 1}) or die 'cannot connect to db';
 
+$dbh->do(q{SET SESSION sql_mode='TRADITIONAL'});
 $dbh->do(q{DROP TABLE IF EXISTS item;});
 $dbh->do(q{
     CREATE TABLE item (
         id        INTEGER PRIMARY KEY,
         name      VARCHAR(255),
-        attribute TINYINT DEFAULT 1
+        attribute TINYINT NOT NULL DEFAULT 1
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 });
 
