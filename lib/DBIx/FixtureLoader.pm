@@ -5,8 +5,9 @@ use warnings;
 
 our $VERSION = "0.09";
 
-use File::Basename qw/basename/;
 use Carp qw/croak/;
+use DBIx::TransactionManager;
+use File::Basename qw/basename/;
 
 use SQL::Maker;
 SQL::Maker->load_plugin('InsertMulti');
@@ -18,6 +19,13 @@ has dbh => (
     is       => 'ro',
     isa      => sub { shift->isa('DBI::db') },
     required => 1,
+);
+
+has transaction_manager => (
+    is => 'lazy',
+    default => sub {
+        DBIx::TransactionManager->new(shift->dbh);
+    },
 );
 
 has bulk_insert => (
@@ -177,7 +185,7 @@ sub _load_fixture_from_data {
 
     my $dbh = $self->dbh;
     # needs limit ?
-    $dbh->begin_work or croak $dbh->errstr;
+    my $txn = $self->transaction_manager->txn_scope or croak $dbh->errstr;
 
     my $opt; $opt->{prefix} = 'INSERT IGNORE INTO' if $ignore;
     if ($bulk_insert) {
@@ -199,7 +207,7 @@ sub _load_fixture_from_data {
             $dbh->do( $sql, undef, @binds ) or croak $dbh->errstr;
         }
     }
-    $dbh->commit or croak $dbh->errstr;
+    $txn->commit or croak $dbh->errstr;
 }
 
 sub _build_on_duplicate {

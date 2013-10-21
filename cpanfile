@@ -1,4 +1,5 @@
 requires 'DBI';
+requires 'DBIx::TransactionManager';
 requires 'Moo';
 requires 'SQL::Maker', '1.09';
 requires 'parent';
