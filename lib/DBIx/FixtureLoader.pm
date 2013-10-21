@@ -52,6 +52,11 @@ has ignore => (
     default => sub { undef },
 );
 
+has delete => (
+    is      => 'ro',
+    default => sub { undef },
+);
+
 has skip_null_column => (
     is      => 'ro',
     default => sub { undef },
@@ -179,6 +184,7 @@ sub _load_fixture_from_data {
     if ($update && $self->_driver_name ne 'mysql') {
         croak '`update` option only support mysql'
     }
+    my $delete = $self->delete || $args{delete};
 
     $data = $self->_normalize_data($data);
     return unless @$data;
@@ -186,6 +192,11 @@ sub _load_fixture_from_data {
     my $dbh = $self->dbh;
     # needs limit ?
     my $txn = $self->transaction_manager->txn_scope or croak $dbh->errstr;
+
+    if ($delete) {
+        my ($sql, @binds) = $self->_sql_builder->delete($table);
+        $dbh->do($sql, undef, @binds);
+    }
 
     my $opt; $opt->{prefix} = 'INSERT IGNORE INTO' if $ignore;
     if ($bulk_insert) {
@@ -278,6 +289,10 @@ Using C<< INSERT ON DUPLICATE >> or not. It only works on MySQL.
 
 Using C<< INSERT IGNORE >> or not. This option is exclusive with C<update>.
 
+=head3 C<< delete (Bool, Default: false) >>
+
+DELETE all data from table before inserting or not.
+
 =head3 C<< csv_option (HashRef, Default: +{}) >>
 
 Specifying L<Text::CSV>'s option. C<binary> and C<blank_is_undef>
@@ -315,6 +330,10 @@ Using C<< ON DUPLICATE KEY UPDATE >> or not. Default value depends on object set
 =item C<< ignore:Bool >>
 
 Using C<< INSERT IGNORE >> or not.
+
+=item C<< delete:Bool >>
+
+DELETE all data from table before inserting or not.
 
 =back
 

@@ -41,6 +41,10 @@ Using `INSERT ON DUPLICATE` or not. It only works on MySQL.
 
 Using `INSERT IGNORE` or not. This option is exclusive with `update`.
 
+### `delete (Bool, Default: false)`
+
+DELETE all data from table before inserting or not.
+
 ### `csv_option (HashRef, Default: +{})`
 
 Specifying [Text::CSV](http://search.cpan.org/perldoc?Text::CSV)'s option. `binary` and `blank_is_undef`
@@ -76,6 +80,10 @@ In most cases `%option` is not needed. Available keys of `%option` are as follow
 - `ignore:Bool`
 
     Using `INSERT IGNORE` or not.
+
+- `delete:Bool`
+
+    DELETE all data from table before inserting or not.
 
 ## File Name and Data Format
 

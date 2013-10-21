@@ -1,6 +1,7 @@
 Revision history for Perl extension DBIx-FixtureLoader
 
 {{$NEXT}}
+    - add `delete` option (delete all data before inserting.)
 
 0.10 2013-10-21T12:59:08Z
     - depend on DBIx::TransactionManager for more flexible control

@@ -75,4 +75,25 @@ subtest "can't set update option" => sub {
     ok $@;
 };
 
+subtest 'delete' => sub {
+    my $m = DBIx::FixtureLoader->new(
+        dbh => $dbh,
+    );
+    $m->load_fixture('t/data/item-3.json', delete => 1);
+
+    my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
+    is scalar @$rows, 1;
+};
+
+subtest 'delete2' => sub {
+    my $m = DBIx::FixtureLoader->new(
+        dbh => $dbh,
+        delete => 1,
+    );
+    $m->load_fixture('t/data/item-2.yml');
+
+    my $rows = $dbh->selectall_arrayref('SELECT * FROM item;', {Slice => {}});
+    is scalar @$rows, 2;
+};
+
 done_testing;
