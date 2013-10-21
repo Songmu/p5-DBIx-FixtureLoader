@@ -46,6 +46,12 @@ Using `INSERT IGNORE` or not. This option is exclusive with `update`.
 Specifying [Text::CSV](http://search.cpan.org/perldoc?Text::CSV)'s option. `binary` and `blank_is_undef`
 are automatically set.
 
+### `skip_null_column (Bool, Default: false)`
+
+If true, null data is not to be inserted or updated explicitly. It it for using default value.
+
+NOTE: If this option is true, data can't be overwritten by null value.
+
 ## Methods
 
 ### `$loader->load_fixture($file_or_data:(Str|HashRef|ArrayRef), [%option])`

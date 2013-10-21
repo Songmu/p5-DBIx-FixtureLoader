@@ -2,6 +2,9 @@ Revision history for Perl extension DBIx-FixtureLoader
 
 {{$NEXT}}
 
+0.10 2013-10-21T12:59:08Z
+    - depend on DBIx::TransactionManager for more flexible control
+
 0.09 2013-09-28T08:56:56Z
     - add `skip_null_column` constructor option
 
