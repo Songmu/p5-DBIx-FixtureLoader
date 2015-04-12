@@ -71,7 +71,7 @@ In most cases `%option` is not needed. Available keys of `%option` are as follow
 
 - `format:Str`
 
-    data format. "CSV", "YAML" and "JSON" are available.
+    data format. "CSV", "TSV",  "YAML" and "JSON" are available.
 
 - `update:Bool`
 

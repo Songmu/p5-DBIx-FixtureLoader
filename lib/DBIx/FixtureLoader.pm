@@ -112,8 +112,8 @@ sub load_fixture {
     }
 
     my $rows;
-    if ($format eq 'csv') {
-        $rows = $self->_get_data_from_csv($file);
+    if ($format eq 'csv' || $format eq 'tsv') {
+        $rows = $self->_get_data_from_csv($file, $format);
     }
     else {
         if ($format eq 'json') {
@@ -139,11 +139,13 @@ sub load_fixture {
 }
 
 sub _get_data_from_csv {
-    my ($self, $file) = @_;
+    my ($self, $file, $format) = @_;
     require Text::CSV;
+
     my $csv = Text::CSV->new({
         binary         => 1,
         blank_is_undef => 1,
+        sep_char => $format eq 'tsv' ? "\t" : ',',
         %{ $self->csv_option },
     }) or croak( Text::CSV->error_diag );
 
