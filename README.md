@@ -7,7 +7,6 @@ DBIx::FixtureLoader - Loading fixtures and inserting to your database
     use DBI;
     use DBIx::FixtureLoader;
     
-
     my $dbh = DBI->connect(...);
     my $loader = DBIx::FixtureLoader->new(dbh => $dbh);
     $loader->load_fixture('item.csv');
@@ -47,7 +46,7 @@ DELETE all data from table before inserting or not.
 
 ### `csv_option (HashRef, Default: +{})`
 
-Specifying [Text::CSV](http://search.cpan.org/perldoc?Text::CSV)'s option. `binary` and `blank_is_undef`
+Specifying [Text::CSV](https://metacpan.org/pod/Text::CSV)'s option. `binary` and `blank_is_undef`
 are automatically set.
 
 ### `skip_null_column (Bool, Default: false)`
@@ -71,7 +70,7 @@ In most cases `%option` is not needed. Available keys of `%option` are as follow
 
 - `format:Str`
 
-    data format. "CSV", "TSV",  "YAML" and "JSON" are available.
+    data format. "CSV", "YAML" and "JSON" are available.
 
 - `update:Bool`
 
