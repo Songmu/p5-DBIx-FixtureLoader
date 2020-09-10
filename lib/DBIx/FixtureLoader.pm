@@ -189,7 +189,6 @@ sub _load_fixture_from_data {
     my $delete = $self->delete || $args{delete};
 
     $data = $self->_normalize_data($data);
-    return unless @$data;
 
     my $dbh = $self->dbh;
     # needs limit ?
@@ -199,6 +198,8 @@ sub _load_fixture_from_data {
         my ($sql, @binds) = $self->_sql_builder->delete($table);
         $dbh->do($sql, undef, @binds);
     }
+
+    return $txn->commit or croak $dbh->errstr unless scalar @$data;
 
     my $opt; $opt->{prefix} = 'INSERT IGNORE INTO' if $ignore;
     if ($bulk_insert) {
@@ -257,7 +258,7 @@ DBIx::FixtureLoader - Loading fixtures and inserting to your database
 
     use DBI;
     use DBIx::FixtureLoader;
-    
+
     my $dbh = DBI->connect(...);
     my $loader = DBIx::FixtureLoader->new(dbh => $dbh);
     $loader->load_fixture('item.csv');
