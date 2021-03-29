@@ -199,7 +199,10 @@ sub _load_fixture_from_data {
         $dbh->do($sql, undef, @binds);
     }
 
-    return $txn->commit or croak $dbh->errstr unless scalar @$data;
+    unless (scalar @$data) {
+        my $ret = $txn->commit or croak $dbh->errstr;
+        return $ret;
+    }
 
     my $opt; $opt->{prefix} = 'INSERT IGNORE INTO' if $ignore;
     if ($bulk_insert) {
