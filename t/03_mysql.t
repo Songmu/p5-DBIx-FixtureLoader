@@ -12,7 +12,12 @@ BEGIN {
 }
 use DBI;
 use DBIx::FixtureLoader;
-use Test::Requires 'Test::mysqld';
+use Test::Requires qw(
+    Test::mysqld
+    DBD::mysql
+);
+
+diag "Test::mysqld::VERSION " . $Test::mysqld::VERSION . ", DBD::mysql::VERSION " . $DBD::mysql::VERSION;
 
 my $mysqld = Test::mysqld->new(my_cnf => {'skip-networking' => ''}) or plan skip_all => $Test::mysqld::errstr;
 my $dbh = DBI->connect($mysqld->dsn, '', '', {RaiseError => 1, mysql_enable_utf8 => 1}) or die 'cannot connect to db';
